@@ -92,11 +92,37 @@ void init_papi() {
 		<< std::endl;
 }
 
+void printUsage(char* path) {
+	printf("usage: %s <algorithm> <matrix size>\n", path);
+	printf("algorithms:\n");
+	printf("\t1: regular\n");
+	printf("\t2: line by line\n");
+	printf("\t3: clusters\n");
+}
 
 int main(int argc, char *argv[]) {
-	int mat_size, op = 1;
 	int EventSet = PAPI_NULL;
   	long long values[2];
+
+	if (argc < 3) {
+		printUsage(argv[0]);
+		exit(1);
+	}
+
+	int algorithm = atoi(argv[1]);
+	int matrix_size = atoi(argv[2]);
+
+	if (algorithm < 1 || algorithm > 3) {
+		printf("Invalid algorithm!\n");
+		printUsage(argv[0]);
+		exit(2);
+	}
+
+	if (matrix_size <= 0) {
+		printf("Matrix size must be positive!\n");
+		printUsage(argv[0]);
+		exit(3);
+	}
 	
 	if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT) {
 		std::cout << "FAIL" << std::endl;
@@ -114,44 +140,33 @@ int main(int argc, char *argv[]) {
 		std::cout << "ERRO: PAPI_L2_DCM" << std::endl;
 	}
 
-	do {
-		std::cout << std::endl << "1. Multiplication" << std::endl;
-		std::cout << "2. Line Multiplication" << std::endl;
-		std::cout << "Selection?: ";
-		std::cin >> op;
+	if (PAPI_start(EventSet) != PAPI_OK) {
+		std::cout << "ERRO: Start PAPI" << std::endl;
+	}
 
-		if (op == 0) {
-			break;
-		}
+	switch (algorithm){
+	case 1: 
+		multiplyMatrix(matrix_size);
+		break;
+	case 2:
+		multiplyMatrix(matrix_size, true);
+		break;
+	case 3:
+		printf("Not implemented yet!\n");
+		exit(4);
+		break;
+	}
 
-		std::cout << "Matrix dimension? ";
-   		std::cin >> mat_size;
+	if (PAPI_stop(EventSet, values) != PAPI_OK) {
+		std::cout << "ERRO: Stop PAPI" << std::endl;
+	}
 
-		// Start counting
-		if (PAPI_start(EventSet) != PAPI_OK) {
-			std::cout << "ERRO: Start PAPI" << std::endl;
-		}
+	std::cout << "L1 DCM: " << values[0] << std::endl;
+	std::cout << "L2 DCM: " << values[1] << std::endl;
 
-		switch (op){
-		case 1: 
-			multiplyMatrix(mat_size);
-			break;
-		case 2:
-			multiplyMatrix(mat_size, true);
-			break;
-		}
-
-  		if (PAPI_stop(EventSet, values) != PAPI_OK) {
-			std::cout << "ERRO: Stop PAPI" << std::endl;
-		}
-
-		std::cout << "L1 DCM: " << values[0] << std::endl;
-		std::cout << "L2 DCM: " << values[1] << std::endl;
-
-		if (PAPI_reset(EventSet) != PAPI_OK) {
-			std::cout << "FAIL reset" << std::endl; 
-		}
-	} while (op != 0);
+	if (PAPI_reset(EventSet) != PAPI_OK) {
+		std::cout << "FAIL reset" << std::endl; 
+	}
 
 	if (PAPI_remove_event(EventSet, PAPI_L1_DCM) != PAPI_OK) {
 		std::cout << "FAIL remove event" << std::endl; 
