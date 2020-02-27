@@ -6,13 +6,13 @@
 #include <cstdlib>
 #include <papi.h>
 #include <math.h>
-#include <stdlib.h>
 
 #define SYSTEMTIME clock_t
  
-void multiplyMatrixes(int mat_size, bool in_line = false) {
+void multiplyMatrix(int mat_size, bool is_line = false) {
 	SYSTEMTIME Time1, Time2;
-	int i, j, k, acc;
+	double acc;
+	int i, j, k;
 	double* mat1 = (double*) malloc(mat_size * mat_size * sizeof(*mat1));
 	double* mat2 = (double*) malloc(mat_size * mat_size * sizeof(*mat2));
 	double* mat_res = (double*) malloc(mat_size * mat_size * sizeof(*mat_res));
@@ -26,10 +26,10 @@ void multiplyMatrixes(int mat_size, bool in_line = false) {
 
     Time1 = clock();
 
-	if (in_line) {
+	if (is_line) {
 		for (i = 0; i < mat_size; ++i) {	
 			for (k = 0; k < mat_size; ++k) {	
-				for (j = 0; j < mat_size; ++j) {
+				for (j = 0; j < mat_size; ++j) {	
 					mat_res[i*mat_size + j] += mat1[i*mat_size + k] * mat2[k*mat_size + j];
 				}
 			}
@@ -50,7 +50,7 @@ void multiplyMatrixes(int mat_size, bool in_line = false) {
 	printf("Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
 
 	std::cout << "Result matrix:" << std::endl;
-	for(i = 0; i < std::min(10, mat_size); ++i) {
+	for (i = 0; i < std::min(10, mat_size); ++i) {
 		std::cout << mat_res[i] << " ";
 	}
 	std::cout << std::endl;
@@ -93,7 +93,7 @@ void init_papi() {
 }
 
 
-int main (int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	int mat_size, op = 1;
 	int EventSet = PAPI_NULL;
   	long long values[2];
@@ -134,10 +134,10 @@ int main (int argc, char *argv[]) {
 
 		switch (op){
 		case 1: 
-			multiplyMatrixes(mat_size);
+			multiplyMatrix(mat_size);
 			break;
 		case 2:
-			multiplyMatrixes(mat_size, true);
+			multiplyMatrix(mat_size, true);
 			break;
 		}
 
