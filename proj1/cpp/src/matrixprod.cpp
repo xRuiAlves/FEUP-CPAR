@@ -8,17 +8,40 @@
 #include <math.h>
 
 #define SYSTEMTIME clock_t
+
+void multiplyMatrixRegular(double* mat1, double* mat2, double* mat_res, int mat_size, int x0, int x1) {
+	int i, j, k;
+	double acc;
+	for (i = x0; i < x1; ++i) {	
+		for (j = x0; j < x1; ++j) {	
+			acc = 0;
+			for (k = x0; k < x1; ++k) {	
+				acc += mat1[i*mat_size + k] * mat2[k*mat_size + j];
+			}
+			mat_res[i*mat_size + j] = acc;
+		}
+	}
+}
+
+void multiplyMatrixLines(double* mat1, double* mat2, double* mat_res, int mat_size, int x0, int x1) {
+	int i, j, k;
+	for (i = x0; i < x1; ++i) {	
+		for (k = x0; k < x1; ++k) {	
+			for (j = x0; j < x1; ++j) {	
+				mat_res[i*mat_size + j] += mat1[i*mat_size + k] * mat2[k*mat_size + j];
+			}
+		}
+	}
+}
  
 void multiplyMatrix(int mat_size, bool is_line = false) {
 	SYSTEMTIME Time1, Time2;
-	double acc;
-	int i, j, k;
 	double* mat1 = (double*) malloc(mat_size * mat_size * sizeof(*mat1));
 	double* mat2 = (double*) malloc(mat_size * mat_size * sizeof(*mat2));
 	double* mat_res = (double*) malloc(mat_size * mat_size * sizeof(*mat_res));
 
-	for (i = 0; i < mat_size; ++i) {
-		for (j = 0; j < mat_size; ++j) {
+	for (int i = 0; i < mat_size; ++i) {
+		for (int j = 0; j < mat_size; ++j) {
 			mat1[i*mat_size + j] = 1.0;
 			mat2[i*mat_size + j] = 1.0 + i;
 		}
@@ -27,30 +50,16 @@ void multiplyMatrix(int mat_size, bool is_line = false) {
     Time1 = clock();
 
 	if (is_line) {
-		for (i = 0; i < mat_size; ++i) {	
-			for (k = 0; k < mat_size; ++k) {	
-				for (j = 0; j < mat_size; ++j) {	
-					mat_res[i*mat_size + j] += mat1[i*mat_size + k] * mat2[k*mat_size + j];
-				}
-			}
-		}
+		multiplyMatrixLines(mat1, mat2, mat_res, mat_size, 0, mat_size);
 	} else {
-		for (i = 0; i < mat_size; ++i) {	
-			for (j = 0; j < mat_size; ++j) {	
-				acc = 0;
-				for (k = 0; k < mat_size; ++k) {	
-					acc += mat1[i*mat_size + k] * mat2[k*mat_size + j];
-				}
-				mat_res[i*mat_size + j] = acc;
-			}
-		}
+		multiplyMatrixRegular(mat1, mat2, mat_res, mat_size, 0, mat_size);
 	}
 
     Time2 = clock();
 	printf("Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
 
 	std::cout << "Result matrix:" << std::endl;
-	for (i = 0; i < std::min(10, mat_size); ++i) {
+	for (int i = 0; i < std::min(10, mat_size); ++i) {
 		std::cout << mat_res[i] << " ";
 	}
 	std::cout << std::endl;
@@ -60,7 +69,7 @@ void multiplyMatrix(int mat_size, bool is_line = false) {
 	free(mat_res);
 }
 
-float produtoInterno(float *v1, float *v2, int col) {
+float internalProduct(float *v1, float *v2, int col) {
 	int i;
 	float sum=0.0;	
 
