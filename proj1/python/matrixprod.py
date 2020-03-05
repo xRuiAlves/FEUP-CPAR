@@ -3,7 +3,7 @@
 from pypapi import papi_high
 from pypapi import events as papi_events
 
-from time import time_ns
+from time import time
 import sys
 
 
@@ -23,7 +23,7 @@ def multiplyMatrix(mat_size, is_line=False):
     mat2 = [1.0 + i for i in range(mat_size) for _ in range(mat_size)]
     mat_res = [0.0] * (mat_size * mat_size)
 
-    start_time = time_ns()
+    start_time = time()
     if is_line:
         for i in range(mat_size):
             for k in range(mat_size):
@@ -37,8 +37,8 @@ def multiplyMatrix(mat_size, is_line=False):
                     acc += mat1[i*mat_size + k] * mat2[k*mat_size + j]
                 mat_res[i*mat_size + j] = acc
 
-    end_time = time_ns()
-    print('Time: {:3.3f} seconds'.format((end_time - start_time) / 1e9))
+    end_time = time()
+    print('Time: {:3.3f} seconds'.format(end_time - start_time))
 
     print('Result Matrix:')
     for i in range(min(mat_size, 10)):
