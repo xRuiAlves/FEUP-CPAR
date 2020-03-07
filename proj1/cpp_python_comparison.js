@@ -1,20 +1,22 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+const fs = require('fs');
 const EXECUTABLES = Object.freeze({
     cpp: "cpp/matrixprod.out",
     python: "pypy3 python/matrixprod.py",
 });
 
 const printUsage = () => {
-    console.log(`usage: ${process.argv[1]} <num trials> <initial size> <last size> <increment size>`);
+    console.log(`usage: ${process.argv[1]} <num trials> <initial size> <last size> <increment size> <output filename>`);
 }
 
-if (process.argv.length < 6) {
+if (process.argv.length < 7) {
     printUsage();
     process.exit(1);
 }
 
-const [num_trials, initial_size, last_size, increment_size] = process.argv.slice(2).map(num => parseInt(num, 10));
+const [num_trials, initial_size, last_size, increment_size] = process.argv.slice(2, 6).map(num => parseInt(num, 10));
+const output_filename = process.argv[6];
 
 if (initial_size <= 0 || last_size <= 0 || increment_size <= 0) {
     console.log("Matrix sizes must be positive!");
@@ -33,7 +35,6 @@ const getAverage = (list) => (list.reduce((prev, curr) => prev + curr, 0) / list
 const getResultsCSV = async () => {
     const csv = [];
 
-    
     for (let matrix_size = initial_size; matrix_size <= last_size; matrix_size += increment_size) {
         for (const [language, executable_path] of Object.entries(EXECUTABLES)) {
             const exec_times = [];
@@ -51,16 +52,21 @@ const getResultsCSV = async () => {
             const exec_time_avg = getAverage(exec_times);
             const l1_cache_misses_avg = getAverage(l1_cache_misses);
             const l2_cache_misses_avg = getAverage(l2_cache_misses);
-            csv.push(`${matrix_size},${language},${exec_time_avg},${l1_cache_misses_avg},${l2_cache_misses_avg}`);
+
+            const csv_line = `${matrix_size},${language},${exec_time_avg},${l1_cache_misses_avg},${l2_cache_misses_avg}`;
+            console.log(csv_line);
+            csv.push(csv_line);
         }
     }
-    
 
     return csv.join("\n");
 }
 
 getResultsCSV()
-    .then((csv) => console.log(csv))
+    .then((csv) => {
+        fs.writeFileSync(output_filename, csv);
+        console.log("Done.");
+    })
     .catch((err) => {
         console.error(err);
         process.exit(4);
