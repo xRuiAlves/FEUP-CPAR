@@ -34,7 +34,7 @@ void multiplyMatrixLines(double* mat1, double* mat2, double* mat_res, int mat_si
 	}
 }
  
-void multiplyMatrix(int mat_size, bool is_line = false) {
+double multiplyMatrix(int mat_size, bool is_line = false) {
 	SYSTEMTIME Time1, Time2;
 	double* mat1 = (double*) malloc(mat_size * mat_size * sizeof(*mat1));
 	double* mat2 = (double*) malloc(mat_size * mat_size * sizeof(*mat2));
@@ -56,17 +56,12 @@ void multiplyMatrix(int mat_size, bool is_line = false) {
 	}
 
     Time2 = clock();
-	printf("Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
-
-	std::cout << "Result matrix:" << std::endl;
-	for (int i = 0; i < std::min(10, mat_size); ++i) {
-		std::cout << mat_res[i] << " ";
-	}
-	std::cout << std::endl;
 
 	free(mat1);
 	free(mat2);
 	free(mat_res);
+
+	return ((double)(Time2 - Time1) / CLOCKS_PER_SEC);
 }
 
 float internalProduct(float *v1, float *v2, int col) {
@@ -111,6 +106,7 @@ void printUsage(char* path) {
 
 int main(int argc, char *argv[]) {
 	int EventSet = PAPI_NULL;
+	double time;
   	long long values[2];
 
 	if (argc < 3) {
@@ -155,10 +151,10 @@ int main(int argc, char *argv[]) {
 
 	switch (algorithm){
 	case 1: 
-		multiplyMatrix(matrix_size);
+		time = multiplyMatrix(matrix_size);
 		break;
 	case 2:
-		multiplyMatrix(matrix_size, true);
+		time = multiplyMatrix(matrix_size, true);
 		break;
 	case 3:
 		printf("Not implemented yet!\n");
@@ -170,8 +166,7 @@ int main(int argc, char *argv[]) {
 		std::cout << "ERRO: Stop PAPI" << std::endl;
 	}
 
-	std::cout << "L1 DCM: " << values[0] << std::endl;
-	std::cout << "L2 DCM: " << values[1] << std::endl;
+	printf("%3.3f %lld %lld\n", time, values[0], values[1]);
 
 	if (PAPI_reset(EventSet) != PAPI_OK) {
 		std::cout << "FAIL reset" << std::endl; 

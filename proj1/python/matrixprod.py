@@ -38,13 +38,7 @@ def multiplyMatrix(mat_size, is_line=False):
                 mat_res[i*mat_size + j] = acc
 
     end_time = time()
-    print('Time: {:3.3f} seconds'.format(end_time - start_time))
-
-    print('Result Matrix:')
-    for i in range(min(mat_size, 10)):
-        print(mat_res[i], end=' ')
-
-    print()
+    return '{:3.3f}'.format(end_time - start_time)
 
 def multiplyMatrixCluster(mat_size):
     print('Not yet implemented!')
@@ -72,12 +66,12 @@ if __name__ == "__main__":
     papiStartCounters()
 
     if algorithm == 1:
-        multiplyMatrix(mat_size)
+        time = multiplyMatrix(mat_size)
     elif algorithm == 2:
-        multiplyMatrix(mat_size, True)
+        time = multiplyMatrix(mat_size, True)
     else:
-        multiplyMatrixCluster(mat_size)        
+        time = multiplyMatrixCluster(mat_size)        
 
     [l1_dcm, l2_dcm] = papiStopCounters()
 
-    print(f'Direct cache misses:\n\tl1: {l1_dcm}\n\tl2: {l2_dcm}')
+    print(f'{time} {l1_dcm} {l2_dcm}')
