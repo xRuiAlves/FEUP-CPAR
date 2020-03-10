@@ -25,25 +25,36 @@ void multiplyMatrixRegular(double* mat1, double* mat2, double* mat_res, int mat_
 	}
 }
 
-void multiplyMatrixLines(double* mat1, double* mat2, double* mat_res, int mat_size, int x0, int x1) {
+void multiplyMatrixLines(double* mat1, double* mat2, double* mat_res, int mat_size) {
 	int i, j, k;
-	for (i = x0; i < x1; ++i) {	
-		for (k = x0; k < x1; ++k) {	
-			for (j = x0; j < x1; ++j) {	
+	for (i = 0; i < mat_size; ++i) {	
+		for (k = 0; k < mat_size; ++k) {	
+			for (j = 0; j < mat_size; ++j) {	
 				mat_res[i*mat_size + j] += mat1[i*mat_size + k] * mat2[k*mat_size + j];
 			}
 		}
 	}
 }
 
-void multiplyMatrixLines(double* mat1, double* mat2, double* mat_res, int mat_size) {
-	multiplyMatrixLines(mat1, mat2, mat_res, mat_size, 0, mat_size);
-}
-
 void multiplyMatrixClusters(double* mat1, double* mat2, double* mat_res, int mat_size, int cluster_size) {
-	int num_clusters = mat_size / cluster_size;
-	printf("Cluster Size: %d\n", cluster_size);
-	printf("Num Clusters: %d\n", num_clusters);
+	int block_i, block_j, block_k, i, j, k;
+
+	for (block_i = 0; block_i < mat_size; block_i += cluster_size) {
+        for (block_j = 0; block_j < mat_size; block_j += cluster_size) {
+            for (block_k = 0; block_k < mat_size; block_k += cluster_size) {
+                for (i = 0; i < cluster_size; ++i) {
+                    for (k = 0; k < cluster_size; ++k) {
+                        for (j = 0; j < cluster_size; ++j) {
+							mat_res[(block_i + i)*mat_size + block_j + j] += 
+								mat1[(block_i + i)*mat_size + block_k + k] * 
+								mat2[(block_k + k)*mat_size + block_j + j];
+						}
+					}
+				}
+
+			}
+		}
+	}                   
 }
 
 double multiplyMatrix(int mat_size, MatrixAlgorithm algorithm, int cluster_size = 0) {
@@ -72,11 +83,6 @@ double multiplyMatrix(int mat_size, MatrixAlgorithm algorithm, int cluster_size 
 		multiplyMatrixClusters(mat1, mat2, mat_res, mat_size, cluster_size);
 		break;
 	}
-
-	for (int pp = 0; pp < 10; ++pp) {
-		printf("%.1lf ", mat_res[pp]);
-	}
-	printf("\n");
 
     Time2 = clock();
 
