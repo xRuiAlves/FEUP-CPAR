@@ -9,7 +9,7 @@
 
 #define SYSTEMTIME clock_t
 
-enum MatrixAlgorithm { regular, line_by_line, clusters };
+enum MatrixAlgorithm { regular, line_by_line, blocks };
 
 void multiplyMatrixRegular(double* mat1, double* mat2, double* mat_res, int mat_size) {
 	int i, j, k;
@@ -36,15 +36,15 @@ void multiplyMatrixLines(double* mat1, double* mat2, double* mat_res, int mat_si
 	}
 }
 
-void multiplyMatrixClusters(double* mat1, double* mat2, double* mat_res, int mat_size, int cluster_size) {
+void multiplyMatrixBlocks(double* mat1, double* mat2, double* mat_res, int mat_size, int block_size) {
 	int block_i, block_j, block_k, i, j, k;
 
-	for (block_i = 0; block_i < mat_size; block_i += cluster_size) {
-        for (block_j = 0; block_j < mat_size; block_j += cluster_size) {
-            for (block_k = 0; block_k < mat_size; block_k += cluster_size) {
-                for (i = 0; i < cluster_size; ++i) {
-                    for (k = 0; k < cluster_size; ++k) {
-                        for (j = 0; j < cluster_size; ++j) {
+	for (block_i = 0; block_i < mat_size; block_i += block_size) {
+        for (block_j = 0; block_j < mat_size; block_j += block_size) {
+            for (block_k = 0; block_k < mat_size; block_k += block_size) {
+                for (i = 0; i < block_size; ++i) {
+                    for (k = 0; k < block_size; ++k) {
+                        for (j = 0; j < block_size; ++j) {
 							mat_res[(block_i + i)*mat_size + block_j + j] += 
 								mat1[(block_i + i)*mat_size + block_k + k] * 
 								mat2[(block_k + k)*mat_size + block_j + j];
@@ -57,7 +57,7 @@ void multiplyMatrixClusters(double* mat1, double* mat2, double* mat_res, int mat
 	}                   
 }
 
-double multiplyMatrix(int mat_size, MatrixAlgorithm algorithm, int cluster_size = 0) {
+double multiplyMatrix(int mat_size, MatrixAlgorithm algorithm, int block_size = 0) {
 	SYSTEMTIME Time1, Time2;
 	double* mat1 = (double*) malloc(mat_size * mat_size * sizeof(*mat1));
 	double* mat2 = (double*) malloc(mat_size * mat_size * sizeof(*mat2));
@@ -79,8 +79,8 @@ double multiplyMatrix(int mat_size, MatrixAlgorithm algorithm, int cluster_size 
 	case line_by_line:
 		multiplyMatrixLines(mat1, mat2, mat_res, mat_size);
 		break;
-	case clusters:
-		multiplyMatrixClusters(mat1, mat2, mat_res, mat_size, cluster_size);
+	case blocks:
+		multiplyMatrixBlocks(mat1, mat2, mat_res, mat_size, block_size);
 		break;
 	}
 
@@ -126,11 +126,11 @@ void init_papi() {
 }
 
 void printUsage(char* path) {
-	printf("usage: %s <algorithm> <matrix size> [<cluster_size>]\n", path);
+	printf("usage: %s <algorithm> <matrix size> [<block_size>]\n", path);
 	printf("algorithms:\n");
 	printf("\t1: regular\n");
 	printf("\t2: line by line\n");
-	printf("\t3: clusters (requires cluster size input)\n");
+	printf("\t3: block by block (requires block size input)\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -191,8 +191,8 @@ int main(int argc, char *argv[]) {
 				printUsage(argv[0]);
 				exit(4);
 			}
-			int cluster_size = atoi(argv[3]);
-			time = multiplyMatrix(matrix_size, MatrixAlgorithm::clusters, cluster_size);
+			int block_size = atoi(argv[3]);
+			time = multiplyMatrix(matrix_size, MatrixAlgorithm::blocks, block_size);
 			break;
 		}
 	}

@@ -40,15 +40,11 @@ def multiplyMatrix(mat_size, is_line=False):
     end_time = time()
     return '{:3.3f}'.format(end_time - start_time)
 
-def multiplyMatrixCluster(mat_size):
-    print('Not yet implemented!')
-
 def printUsage(path):
     print(f'usage: {path} <algorithm> <matrix_size>')
     print('algorithms:')
     print('\t1: regular')
     print('\t2: line by line')
-    print('\t3: clusters')
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -68,9 +64,7 @@ if __name__ == "__main__":
     if algorithm == 1:
         time = multiplyMatrix(mat_size)
     elif algorithm == 2:
-        time = multiplyMatrix(mat_size, True)
-    else:
-        time = multiplyMatrixCluster(mat_size)        
+        time = multiplyMatrix(mat_size, True)      
 
     [l1_dcm, l2_dcm] = papiStopCounters()
 
