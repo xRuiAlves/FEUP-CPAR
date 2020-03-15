@@ -5,10 +5,12 @@ const fs = require('fs');
 const LANGUAGES = Object.freeze({
     1: "cpp",
     2: "python",
+    3: "java",
 });
 const EXECUTABLES = Object.freeze({
     "cpp": "cpp/matrixprod.out",
     "python": "pypy3 python/matrixprod.py",
+    "java": "java -cp java MatrixProd",
 });
 const NUM_LANGUAGES = Object.keys(LANGUAGES).length;
 const NUM_ALGORITHMS = 3;
@@ -18,6 +20,7 @@ const printUsage = () => {
     console.log("languages:");
     console.log("\t1: cpp");
     console.log("\t2: python");
+    console.log("\t3: java");
     console.log("algorithms:");
     console.log("\t1: regular");
     console.log("\t2: line by line");
