@@ -54,7 +54,7 @@ if __name__ == "__main__":
     algorithm = int(sys.argv[1])
     mat_size = int(sys.argv[2])
 
-    if algorithm < 1 or algorithm > 3:
+    if algorithm < 1 or algorithm > 2:
         print("Invalid algorithm!")
         printUsage(sys.argv[0])
         exit(2)
