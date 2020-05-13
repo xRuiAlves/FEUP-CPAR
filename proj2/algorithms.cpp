@@ -3,10 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
+
+#include <chrono>
+#include <iostream>
 
 int sieve(unsigned long max_number) {
-    clock_t start_time = clock();
+    auto start_time = std::chrono::high_resolution_clock::now();
     char* primeList = new char[max_number + 1];
     memset(primeList, 1, max_number + 1);
 
@@ -23,17 +25,21 @@ int sieve(unsigned long max_number) {
         primes_count += primeList[i];
     }
 
-    clock_t end_time = clock();
+    auto end_time = std::chrono::high_resolution_clock::now();
 
-    double time_s = ((double)(end_time - start_time) / CLOCKS_PER_SEC);
-    printf("Elapsed time: %fs\n", time_s);
+    auto duration_s = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          end_time - start_time)
+                          .count();
+
+    std::cout << "Elapsed time: " << (duration_s / 1000.0) << "s\n";
+    // printf("Elapsed time: %fs\n", duration_s);
 
     delete[] primeList;
     return primes_count;
 }
 
 int sieve_no_even(unsigned long max_number) {
-    clock_t start_time = clock();
+    auto start_time = std::chrono::high_resolution_clock::now();
 
     unsigned long mem_size = (max_number - 1) / 2;
 
@@ -54,10 +60,14 @@ int sieve_no_even(unsigned long max_number) {
         primes_count += primeList[i];
     }
 
-    clock_t end_time = clock();
+    auto end_time = std::chrono::high_resolution_clock::now();
 
-    double time_s = ((double)(end_time - start_time) / CLOCKS_PER_SEC);
-    printf("Elapsed time: %fs\n", time_s);
+    auto duration_s = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          end_time - start_time)
+                          .count();
+
+    std::cout << "Elapsed time: " << (duration_s / 1000.0) << "s\n";
+    // printf("Elapsed time: %fs\n", duration_s);
 
     delete[] primeList;
     return primes_count;
