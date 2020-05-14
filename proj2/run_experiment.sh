@@ -32,8 +32,11 @@ else
     exit 2
 fi
 
+BLOCK_SIZE=${3:-$((800*1024))}
+
 echo "Algorithm: $ALGORITHM_NAME"
 echo "Execution mode: $EXECUTION_MODE_NAME"
+if [[ "$ALGORITHM" = "3" ]]; then echo "Block size: $BLOCK_SIZE"; fi
 echo;
 
 for ((i = MIN_POWER_OF_2; i <= MAX_POWER_OF_2; i++)); do
@@ -41,5 +44,5 @@ for ((i = MIN_POWER_OF_2; i <= MAX_POWER_OF_2; i++)); do
 
     echo "## Executing for 2^$i=$current_power"
 
-    ./proj2.out "$ALGORITHM" "$current_power" "$EXECUTION_MODE" | sed -n -e "s/^Elapsed time: \(.*\)s.*/$ALGORITHM_NAME,$EXECUTION_MODE_NAME,$i,\1/p" | tee -a "$OUTPUT_FILE"
+    ./proj2.out "$ALGORITHM" "$current_power" "$EXECUTION_MODE" "$BLOCK_SIZE" | sed -n -e "s/^Elapsed time: \(.*\)s.*/$ALGORITHM_NAME,$EXECUTION_MODE_NAME,$i,\1/p" | tee -a "$OUTPUT_FILE"
 done

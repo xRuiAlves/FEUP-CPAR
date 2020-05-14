@@ -8,7 +8,7 @@ LDLIBS=-fopenmp
 # I know this is supposed to have no extension, but I want this to be in the gitignore :grin:
 APPNAME=proj2.out
 
-SRCS=proj2.cpp algorithms.cpp
+SRCS=proj2.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: $(APPNAME)
