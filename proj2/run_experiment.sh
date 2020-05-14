@@ -27,6 +27,9 @@ elif [[ "$EXECUTION_MODE" = "2" ]]; then
     EXECUTION_MODE_NAME="openmp"
 elif [[ "$EXECUTION_MODE" = "3" ]]; then
     EXECUTION_MODE_NAME="mpi"
+    # It's WIP
+    echo "MPI WIP, oops"
+    exit 0
 else
     echo "Invalid execution mode"
     exit 2
