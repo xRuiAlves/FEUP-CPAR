@@ -1,9 +1,9 @@
 CC=gcc
 CXX=g++
 RM=rm -f
-CPPFLAGS=-g -Wall
+CPPFLAGS=-g -Wall -fopenmp
 LDFLAGS=-g
-LDLIBS=
+LDLIBS=-fopenmp
 
 # I know this is supposed to have no extension, but I want this to be in the gitignore :grin:
 APPNAME=proj2.out
