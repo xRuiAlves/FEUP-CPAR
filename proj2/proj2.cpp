@@ -25,13 +25,14 @@ void printUsage(char* path) {
  */
 
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
+    if (argc < 4) {
         printUsage(argv[0]);
         return 1;
     }
 
     int algorithm = atoi(argv[1]);
     unsigned long max_number = strtoul(argv[2], NULL, 10);
+    int execution_type = atoi(argv[3]);
 
     if (algorithm < 1 || algorithm > 3) {
         printf("Invalid algorithm!\n");
@@ -46,13 +47,18 @@ int main(int argc, char* argv[]) {
     }
 
     int n_primes = -1;
+    bool use_openmp = false;
+
+    if (execution_type == 2) {
+        use_openmp = true;
+    }
 
     switch (algorithm) {
         case 1:
-            n_primes = sieve(max_number);
+            n_primes = sieve(max_number, use_openmp);
             break;
         case 2:
-            n_primes = sieve_no_even(max_number);
+            n_primes = sieve_no_even(max_number, use_openmp);
             break;
         case 3: {
             printf("Block is WIP\n");
