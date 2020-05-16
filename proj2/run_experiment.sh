@@ -5,6 +5,13 @@ OUTPUT_FILE=data.csv
 MIN_POWER_OF_2=25
 MAX_POWER_OF_2=32
 
+# "Compile pls" flag
+if [[ "$1" = "-c" ]]; then
+    make
+    mpic++ proj2_mpi.cpp -o proj2_mpi.out
+    shift
+fi
+
 # First arg or default to 1
 ALGORITHM=${1:-1}
 
@@ -15,7 +22,7 @@ elif [[ "$ALGORITHM" = "2" ]]; then
 elif [[ "$ALGORITHM" = "3" ]]; then
     ALGORITHM_NAME="block"
 else
-    echo "Invalid algorithm"
+    >&2 echo "Invalid algorithm"
     exit 1
 fi
 
@@ -27,11 +34,12 @@ elif [[ "$EXECUTION_MODE" = "2" ]]; then
     EXECUTION_MODE_NAME="openmp"
 elif [[ "$EXECUTION_MODE" = "3" ]]; then
     EXECUTION_MODE_NAME="mpi"
-    # It's WIP
-    echo "MPI WIP, oops"
-    exit 0
+    if [[ "$ALGORITHM" != 3 ]]; then
+        >&2 echo "Can only execute mpi with block algorithm!"
+        exit 3
+    fi
 else
-    echo "Invalid execution mode"
+    >&2 echo "Invalid execution mode"
     exit 2
 fi
 
@@ -47,5 +55,9 @@ for ((i = MIN_POWER_OF_2; i <= MAX_POWER_OF_2; i++)); do
 
     echo "## Executing for 2^$i=$current_power"
 
-    ./proj2.out "$ALGORITHM" "$current_power" "$EXECUTION_MODE" "$BLOCK_SIZE" | sed -n -e "s/^Elapsed time: \(.*\)s.*/$ALGORITHM_NAME,$EXECUTION_MODE_NAME,$i,\1/p" | tee -a "$OUTPUT_FILE"
+    if [[ "$EXECUTION_MODE" = 3 ]]; then
+        mpiexec ./proj2_mpi.out "$current_power" "$BLOCK_SIZE" | sed -n -e "s/^Elapsed time: \(.*\)s.*/$ALGORITHM_NAME,$EXECUTION_MODE_NAME,$i,\1/p" | tee -a "$OUTPUT_FILE"
+    else
+        ./proj2.out "$ALGORITHM" "$current_power" "$EXECUTION_MODE" "$BLOCK_SIZE" | sed -n -e "s/^Elapsed time: \(.*\)s.*/$ALGORITHM_NAME,$EXECUTION_MODE_NAME,$i,\1/p" | tee -a "$OUTPUT_FILE"
+    fi
 done
