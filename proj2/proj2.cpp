@@ -30,13 +30,6 @@ void printUsage(char* path) {
     printf("\t2: OpenMP parallel\n");
 }
 
-/*
- * Time measurements:
- * - Sequential: clock()
- * - OpenMPI: WPI_wtime
- * - OpenMP: ?
- */
-
 int main(int argc, char* argv[]) {
     if (argc < 4) {
         printUsage(argv[0]);
@@ -82,6 +75,7 @@ int main(int argc, char* argv[]) {
     }
 
     printf("%d primes found!\n", n_primes);
+    return 0;
 }
 
 int sieve(u_long max_number, bool use_openmp) {
