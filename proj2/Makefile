@@ -1,7 +1,7 @@
 CC=gcc
 CXX=g++
 RM=rm -f
-CPPFLAGS=-g -Wall -fopenmp
+CPPFLAGS=-g -Wall -Wextra -pedantic -fopenmp # -O2 
 LDFLAGS=-g
 LDLIBS=-fopenmp
 

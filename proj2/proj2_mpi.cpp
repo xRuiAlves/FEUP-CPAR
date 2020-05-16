@@ -88,7 +88,7 @@ void sieve_blocks(u_long max_number, u_long block_size) {
     int primes_global_total;
     int primes_local_total = 0;
 
-    double start_time;
+    double start_time = 0;
     if (rank == 0) {
         start_time = MPI_Wtime();
     }
